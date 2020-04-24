@@ -10,7 +10,6 @@ import (
 
 const defaultSuspendAfter = 15
 const defaultDevice = "usb"
-const lockFilePath = "/tmp/gopowerman.lock"
 
 var errorLog = log.New(os.Stderr, "[error] ", log.LstdFlags)
 var infoLog = log.New(os.Stderr, "[info] ", log.LstdFlags)
@@ -28,13 +27,13 @@ type inhibitor interface {
 }
 
 func main() {
-	if err := lockFile(); err != nil {
-		infoLog.Fatal(err)
-	}
-
 	after := flag.Int("after", defaultSuspendAfter, "suspend after this amount of inactivity (in minutes)")
 	device := flag.String("device", defaultDevice, "device pattern to match against in /proc/interrupts")
 	flag.Parse()
+
+	if err := lockFile(getLockPath()); err != nil {
+		errorLog.Fatal(err)
+	}
 
 	suspendAfter := time.Duration(*after) * time.Minute
 
