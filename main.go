@@ -10,6 +10,7 @@ import (
 
 const defaultSuspendAfter = 15
 const defaultDevice = "usb"
+const defaultInterval = 1
 
 var errorLog = log.New(os.Stderr, "[error] ", log.LstdFlags)
 var infoLog = log.New(os.Stderr, "[info] ", log.LstdFlags)
@@ -30,12 +31,14 @@ type inhibitor interface {
 func main() {
 	after := flag.Int("after", defaultSuspendAfter, "suspend after this amount of inactivity (in minutes)")
 	device := flag.String("device", defaultDevice, "device pattern to match against in /proc/interrupts")
+	interval := flag.Int("interval", defaultInterval, "check activity every <interval> minutes")
 	flag.Parse()
 
 	if err := lockFile(getLockPath()); err != nil {
 		errorLog.Fatal(err)
 	}
 
+	tinterval := time.Duration(*interval) * time.Minute
 	suspendAfter := time.Duration(*after) * time.Minute
 
 	inhibitors := []inhibitor{&mpris{}, newInterrupts(*device)}
@@ -62,6 +65,6 @@ func main() {
 			suspend()
 		}
 
-		time.Sleep(time.Minute)
+		time.Sleep(tinterval)
 	}
 }
