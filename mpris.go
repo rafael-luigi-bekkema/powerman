@@ -16,7 +16,6 @@ func (m *mpris) isAnythingPlaying() (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("dbus connection failed: %w", err)
 	}
-	defer conn.Close()
 
 	var names []string
 	if err := conn.BusObject().Call("org.freedesktop.DBus.ListNames", 0).Store(&names); err != nil {
