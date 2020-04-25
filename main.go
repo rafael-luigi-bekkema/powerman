@@ -37,7 +37,7 @@ func main() {
 
 	suspendAfter := time.Duration(*after) * time.Minute
 
-	inhibitors := []inhibitor{newMpris(), newInterrupts(*device)}
+	inhibitors := []inhibitor{&mpris{}, newInterrupts(*device)}
 
 	lastUpdate := time.Now()
 	for {

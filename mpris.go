@@ -1,63 +1,33 @@
 package main
 
 import (
-	"bufio"
+	"bytes"
 	"fmt"
 	"os/exec"
-	"sync"
-	"time"
+	"strings"
 )
 
-type mpris struct {
-	sync.Mutex
-	value bool
-	err   error
-}
+type mpris struct{}
 
-func newMpris() *mpris {
-	m := mpris{}
-	go func() {
-		for {
-			if err := m.follow(); err != nil {
-				m.Lock()
-				m.err = err
-				m.Unlock()
-			}
-			time.Sleep(time.Second * 5)
+func (m *mpris) isAnythingPlaying() (bool, error) {
+	cmd := exec.Command("playerctl", "-a", "status")
+	var out, serr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &serr
+	if err := cmd.Run(); err != nil {
+		if serr.String() == "No players found\n" {
+			return false, nil
 		}
-	}()
-	return &m
-}
-
-func (m *mpris) follow() error {
-	cmd := exec.Command("playerctl", "-F", "status")
-	out, err := cmd.StdoutPipe()
-	if err != nil {
-		return fmt.Errorf("failed to get stdout: %w", err)
+		return false, fmt.Errorf("could not run playerctl: %w", err)
 	}
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("failed to get playerctl status: %w", err)
-	}
-	defer cmd.Process.Kill()
-	rdr := bufio.NewReader(out)
-	for {
-		line, err := rdr.ReadString('\n')
-		if err != nil {
-			return fmt.Errorf("error reading playerctl status: %w", err)
+	for _, status := range strings.Split(strings.TrimSpace(out.String()), "\n") {
+		if status == "Playing" {
+			return true, nil
 		}
-		m.Lock()
-		m.value = line == "Playing\n"
-		m.Unlock()
 	}
+	return false, nil
 }
 
 func (m *mpris) Inhibit() (bool, error) {
-	m.Lock()
-	defer m.Unlock()
-	if m.err != nil {
-		err := m.err
-		m.err = nil
-		return false, err
-	}
-	return m.value, nil
+	return m.isAnythingPlaying()
 }
