@@ -50,7 +50,7 @@ func (i *interrupts) updateInterruptCount() (int, error) {
 }
 
 func (i *interrupts) Name() string {
-	return "/proc/interrupts"
+	return fmt.Sprintf("Device: %s", i.device)
 }
 
 func (i *interrupts) Inhibit() (bool, error) {

@@ -45,7 +45,7 @@ func (m *mpris) isAnythingPlaying() (bool, error) {
 
 func (m *mpris) Name() string {
 	if m.name == "" {
-		return "mpris (Unknown)"
+		return "Media (Unknown)"
 	}
 	return m.name
 }
