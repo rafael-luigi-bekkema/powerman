@@ -8,8 +8,7 @@ import (
 	"syscall"
 )
 
-// ErrAlreadyRunning indicates another power instance is already active
-var ErrAlreadyRunning = errors.New("powerman is already running")
+var errAlreadyRunning = errors.New("powerman is already running")
 
 func getLockPath() string {
 	cacheDir, err := os.UserCacheDir()
@@ -29,7 +28,7 @@ func lockFile(filePath string) error {
 	err = syscall.Flock(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
 		file.Close()
-		return ErrAlreadyRunning
+		return errAlreadyRunning
 	}
 
 	if _, err := file.WriteString(fmt.Sprint(os.Getpid())); err != nil {
