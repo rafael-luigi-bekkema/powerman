@@ -49,6 +49,10 @@ func (i *interrupts) updateInterruptCount() (int, error) {
 	return total, nil
 }
 
+func (i *interrupts) Name() string {
+	return "/proc/interrupts"
+}
+
 func (i *interrupts) Inhibit() (bool, error) {
 	count, err := i.updateInterruptCount()
 	if err != nil {

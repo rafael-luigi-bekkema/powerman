@@ -23,6 +23,7 @@ func suspend() {
 }
 
 type inhibitor interface {
+	Name() string
 	Inhibit() (bool, error)
 }
 
@@ -49,7 +50,9 @@ func main() {
 				continue
 			}
 			if inhibit {
+				infoLog.Printf("inhibited by: %s", inh.Name())
 				lastUpdate = now
+				break
 			}
 		}
 
