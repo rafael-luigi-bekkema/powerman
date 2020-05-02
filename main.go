@@ -44,6 +44,7 @@ func main() {
 	inhibitors := []inhibitor{&mpris{}, newInterrupts(*device)}
 
 	lastUpdate := time.Now()
+	var inhibitedBy string
 	for {
 		now := time.Now()
 		for _, inh := range inhibitors {
@@ -53,16 +54,22 @@ func main() {
 				continue
 			}
 			if inhibit {
-				infoLog.Printf("inhibited by: %s", inh.Name())
+				if by := inh.Name(); by != inhibitedBy {
+					inhibitedBy = by
+					infoLog.Printf("inhibited by: %s", by)
+				}
 				lastUpdate = now
 				break
 			}
 		}
 
-		idleTime := now.Sub(lastUpdate)
-		infoLog.Printf("idle time: %s of %s\n", idleTime, suspendAfter)
-		if idleTime >= suspendAfter {
-			suspend()
+		if !lastUpdate.Equal(now) {
+			inhibitedBy = ""
+			idleTime := now.Sub(lastUpdate)
+			// infoLog.Printf("idle time: %s of %s\n", idleTime, suspendAfter)
+			if idleTime >= suspendAfter {
+				suspend()
+			}
 		}
 
 		time.Sleep(tinterval)
