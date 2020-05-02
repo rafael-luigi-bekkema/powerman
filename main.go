@@ -66,10 +66,10 @@ func main() {
 		}
 
 		if !lastUpdate.Equal(now) {
-			inhibitedBy = ""
 			idleTime := now.Sub(lastUpdate)
 			// infoLog.Printf("idle time: %s of %s\n", idleTime, suspendAfter)
 			if idleTime >= suspendAfter {
+				inhibitedBy = ""
 				suspend()
 			}
 		}
