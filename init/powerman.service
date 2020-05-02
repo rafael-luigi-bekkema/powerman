@@ -3,7 +3,7 @@
 Description=Powerman
 
 [Service]
-ExecStart=/bin/bash -c 'exec ~/bin/powerman'
+ExecStart=/bin/bash -c 'exec /usr/bin/powerman'
 
 [Install]
 WantedBy=default.target
