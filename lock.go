@@ -11,11 +11,7 @@ import (
 var errAlreadyRunning = errors.New("powerman is already running")
 
 func getLockPath() string {
-	cacheDir, err := os.UserCacheDir()
-	if err != nil {
-		cacheDir = os.TempDir()
-	}
-	cacheDir = path.Join(cacheDir, "go_powerman.lock")
+	cacheDir := path.Join(os.TempDir(), "go_powerman.lock")
 	return cacheDir
 }
 
