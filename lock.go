@@ -15,22 +15,22 @@ func getLockPath() string {
 	return cacheDir
 }
 
-func lockFile(filePath string) error {
-	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+func lockFile(filePath string) (*os.File, error) {
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = syscall.Flock(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
 		file.Close()
-		return errAlreadyRunning
+		return nil, errAlreadyRunning
 	}
 
 	if _, err := file.WriteString(fmt.Sprint(os.Getpid())); err != nil {
 		file.Close()
-		return err
+		return nil, err
 	}
 
-	return nil
+	return file, nil
 }

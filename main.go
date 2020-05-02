@@ -34,9 +34,11 @@ func main() {
 	interval := flag.Int("interval", defaultInterval, "check activity every <interval> minutes")
 	flag.Parse()
 
-	if err := lockFile(getLockPath()); err != nil {
+	f, err := lockFile(getLockPath())
+	if err != nil {
 		errorLog.Fatal(err)
 	}
+	defer f.Close()
 
 	tinterval := time.Duration(*interval) * time.Minute
 	suspendAfter := time.Duration(*after) * time.Minute
