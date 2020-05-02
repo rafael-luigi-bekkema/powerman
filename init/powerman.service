@@ -1,0 +1,10 @@
+# ~/.config/systemd/user/powerman.service
+[Unit]
+Description=Powerman
+
+[Service]
+ExecStart=/bin/bash -c 'exec ~/bin/powerman'
+
+[Install]
+WantedBy=default.target
+
