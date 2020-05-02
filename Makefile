@@ -17,5 +17,6 @@ install: build
 	install build/$(BINARY_NAME) $(DESTDIR)/$(BINARY_NAME)
 clean:
 	$(GOCMD) clean
-	rm -f $(BINARY_NAME)
+	rm -f build/$(BINARY_NAME)
+	test -d build && rmdir build
 
