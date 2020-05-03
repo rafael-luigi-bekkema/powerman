@@ -7,11 +7,11 @@ DESTDIR=/usr/bin
 
 all: test build
 test:
-	$(GOCMD) test -v ./...
+	CGO_ENABLED=0 $(GOCMD) test -v ./...
 build:
 	$(GOCMD) build -o build/$(BINARY_NAME) -v $(PACKAGES)
 run: build
-	./$(BINARY_NAME)
+	./build/$(BINARY_NAME)
 install: build
 	install -d $(DESTDIR)
 	install build/$(BINARY_NAME) $(DESTDIR)/$(BINARY_NAME)
