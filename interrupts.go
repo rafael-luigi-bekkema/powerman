@@ -29,6 +29,9 @@ func (i *interrupts) updateInterruptCount() (int, error) {
 	defer interrupts.Close()
 
 	rdr := bufio.NewReader(interrupts)
+	line, _ := rdr.ReadString('\n')
+	cpuCount := len(strings.Fields(line))
+
 	var total int
 	for {
 		line, err := rdr.ReadString('\n')
@@ -39,8 +42,8 @@ func (i *interrupts) updateInterruptCount() (int, error) {
 			return 0, fmt.Errorf("failed to read line: %s", err)
 		}
 		values := strings.Fields(line)
-		if len(values) >= 8 && i.device.MatchString(line) {
-			for i := 1; i <= 4; i++ {
+		if len(values) > cpuCount && i.device.MatchString(line) {
+			for i := 1; i <= cpuCount; i++ {
 				num, _ := strconv.Atoi(values[i])
 				total += num
 			}
