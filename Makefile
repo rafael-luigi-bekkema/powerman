@@ -15,6 +15,7 @@ run: build
 install: build
 	install -d $(DESTDIR)
 	install build/$(BINARY_NAME) $(DESTDIR)/$(BINARY_NAME)
+	install init/powerman.service /usr/lib/systemd/user/powerman.service
 clean:
 	$(GOCMD) clean
 	rm -f build/$(BINARY_NAME)
