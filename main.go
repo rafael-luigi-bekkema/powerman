@@ -12,8 +12,7 @@ const defaultSuspendAfter = 15
 const defaultDevice = "usb"
 const defaultInterval = 1
 
-var errorLog = log.New(os.Stderr, "[error] ", log.LstdFlags)
-var infoLog = log.New(os.Stderr, "[info] ", log.LstdFlags)
+var logger = log.New(os.Stderr, "", 0)
 
 func suspend() {
 	log.Println("suspending")
@@ -36,7 +35,7 @@ func main() {
 
 	f, err := lockFile(getLockPath())
 	if err != nil {
-		errorLog.Fatal(err)
+		log.Fatal(err)
 	}
 	defer f.Close()
 
@@ -52,13 +51,13 @@ func main() {
 		for _, inh := range inhibitors {
 			inhibit, err := inh.Inhibit()
 			if err != nil {
-				errorLog.Println(err)
+				logger.Println(err)
 				continue
 			}
 			if inhibit {
 				if by := inh.Name(); by != inhibitedBy {
 					inhibitedBy = by
-					infoLog.Printf("inhibited by: %s", by)
+					logger.Printf("inhibited by: %s", by)
 				}
 				lastUpdate = now
 				break
@@ -67,7 +66,6 @@ func main() {
 
 		if !lastUpdate.Equal(now) {
 			idleTime := now.Sub(lastUpdate)
-			// infoLog.Printf("idle time: %s of %s\n", idleTime, suspendAfter)
 			if idleTime >= suspendAfter {
 				inhibitedBy = ""
 				suspend()
