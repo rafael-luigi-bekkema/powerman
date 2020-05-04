@@ -12,7 +12,7 @@ build:
 	$(GOCMD) build -o build/$(BINARY_NAME) -v $(PACKAGES)
 run: build
 	./build/$(BINARY_NAME)
-install: build
+install:
 	install -d $(DESTDIR)
 	install build/$(BINARY_NAME) $(DESTDIR)/$(BINARY_NAME)
 	install init/powerman.service /usr/lib/systemd/user/powerman.service
