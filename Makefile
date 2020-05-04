@@ -3,7 +3,7 @@ BINARY_NAME=powerman
 PACKAGES=.
 DESTDIR=/usr/bin
 
-.PHONY: test run install clean
+.PHONY: test run install clean build
 
 all: test build
 test:
