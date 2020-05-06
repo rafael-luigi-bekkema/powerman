@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"os"
 	"os/exec"
@@ -28,10 +27,10 @@ type inhibitor interface {
 }
 
 func main() {
-	after := flag.Int("after", defaultSuspendAfter, "suspend after this amount of inactivity (in minutes)")
-	device := flag.String("device", defaultDevice, "device pattern to match against in /proc/interrupts")
-	interval := flag.Int("interval", defaultInterval, "check activity every <interval> minutes")
-	flag.Parse()
+	cfg, err := ReadConfig()
+	if err != nil {
+		log.Fatalf("Could not read config: %s", err)
+	}
 
 	f, err := lockFile(getLockPath())
 	if err != nil {
@@ -39,10 +38,10 @@ func main() {
 	}
 	defer f.Close()
 
-	tinterval := time.Duration(*interval) * time.Minute
-	suspendAfter := time.Duration(*after) * time.Minute
+	tinterval := time.Duration(cfg.General.CheckInterval) * time.Minute
+	suspendAfter := time.Duration(cfg.General.SuspendAfter) * time.Minute
 
-	inhibitors := []inhibitor{&mpris{}, newInterrupts(*device)}
+	inhibitors := []inhibitor{&mpris{}, newInterrupts(cfg.General.DevicePattern)}
 
 	lastUpdate := time.Now()
 	var inhibitedBy string
@@ -65,9 +64,9 @@ func main() {
 		}
 
 		if !lastUpdate.Equal(now) {
+			inhibitedBy = ""
 			idleTime := now.Sub(lastUpdate)
 			if idleTime >= suspendAfter {
-				inhibitedBy = ""
 				suspend()
 			}
 		}

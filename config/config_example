@@ -1,0 +1,5 @@
+[general]
+device_pattern = "usb"
+suspend_after = 20 # In minutes
+check_interval = 1 # In minutes
+
