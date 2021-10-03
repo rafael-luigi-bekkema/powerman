@@ -1,5 +1,5 @@
 # powerman
-A simple power manager that auto-suspend but not when playing media
+A simple power manager that auto-suspends the computer, but not when playing media
 
 ## Usage
 
